@@ -52,7 +52,7 @@ public class Login : PageModel
                          && ls!.Key!.ToLower() == "password"
         );
 
-        if(loginStatus == null)
+        if(password == null)
         {
             ModelState.AddModelError("","Invalid Login");
             return; 
@@ -64,6 +64,39 @@ public class Login : PageModel
         }
 
         //Login Failed
+        var loginRetries = _dbContext.UserLoginInfos.FirstOrDefault( lr => 
+                            lr.UserId == user.Id
+                         && lr!.Key!.ToLower() == "loginretries"
+        );
+
+        if(loginRetries == null)
+        {
+            loginRetries = new UserLoginInfo(user.Id, "loginretries", "1");
+            _dbContext.UserLoginInfos.Add(loginRetries);
+            _dbContext.SaveChanges();
+        }
+        else
+        {
+            loginRetries.Value = (int.Parse(loginRetries.Value ?? "0") + 1).ToString();
+            _dbContext.SaveChanges();
+        }
+
+        if(int.Parse(loginRetries.Value ?? "0") >= 3)
+        {
+            if(loginStatus != null)
+            {
+                loginStatus.Value = "LockedOut";
+            }
+            else
+            {
+                loginStatus = new UserLoginInfo(user.Id, "loginstatus", "LockedOut");
+                _dbContext.UserLoginInfos.Add(loginStatus);
+            }
+
+            _dbContext.SaveChanges();
+        }
+
+        ModelState.AddModelError("","Invalid Login");
     }
 
 }
