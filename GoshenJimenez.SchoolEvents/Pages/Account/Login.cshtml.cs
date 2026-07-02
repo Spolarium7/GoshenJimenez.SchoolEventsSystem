@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Xml.Schema;
 using System.Runtime.ExceptionServices;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 public class Login : PageModel
 {    
     private readonly SchoolEventsDbContext _dbContext; 
@@ -17,7 +20,7 @@ public class Login : PageModel
     [BindProperty]
     public UserLoginDto UserLoginDto { get; set; } = new UserLoginDto();
 
-    public void OnPost()
+    public async Task OnPost()
     {
         if(!ModelState.IsValid)
         {
@@ -61,6 +64,36 @@ public class Login : PageModel
         if(BCrypt.Net.BCrypt.EnhancedVerify(UserLoginDto.Password, password!.Value))
         {
             //Login Success
+            if(loginStatus != null)
+            {
+                loginStatus.Value = "Active";
+            }
+            else
+            {
+                loginStatus = new UserLoginInfo(user.Id, "loginstatus", "Active");
+                _dbContext.UserLoginInfos.Add(loginStatus);
+            }
+
+            _dbContext.SaveChanges();
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName ?? user.FirstName!),
+                new Claim("UserId", user.Id!.ToString()!) // Custom user attribute
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // 2. Sign the user in
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme, 
+                new ClaimsPrincipal(claimsIdentity)
+            );
+
+            // 3. Optional: Store temporary server-side information in Session
+            HttpContext.Session.SetString("UserLoginTime", DateTime.UtcNow.ToString());
+            RedirectToPage("/Index");
+            return;
         }
 
         //Login Failed
