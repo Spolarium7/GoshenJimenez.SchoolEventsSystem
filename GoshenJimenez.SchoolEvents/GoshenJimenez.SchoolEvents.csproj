@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8" />
     <PackageReference Include="Microting.EntityFrameworkCore.MySql" Version="10.0.9" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="Resend" Version="0.5.1" />
   </ItemGroup>
 
 </Project>
