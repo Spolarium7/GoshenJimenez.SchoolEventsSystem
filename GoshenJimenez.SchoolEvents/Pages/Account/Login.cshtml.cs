@@ -61,7 +61,7 @@ public class Login : PageModel
             return; 
         }
 
-        if(BCrypt.Net.BCrypt.EnhancedVerify(UserLoginDto.Password, password!.Value))
+        if(BCrypt.Net.BCrypt.Verify(UserLoginDto.Password, password!.Value))
         {
             //Login Success
             if(loginStatus != null)

@@ -39,5 +39,52 @@ namespace GoshenJimenez.SchoolEvents.Infrastructure.Helpers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public InviteToken? ValidateInviteToken(string token)
+        {
+            var secretKey = _configuration["Jwt:InviteSecret"];
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    ValidateIssuer = true,
+                    ValidIssuer = issuer,
+                    ValidateAudience = true,
+                    ValidAudience = audience,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
+
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "userId");
+                var purposeClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "purpose");
+
+                if (userIdClaim == null || purposeClaim == null || purposeClaim.Value != "invite")
+                {
+                    return null;
+                }
+
+                return new InviteToken
+                {
+                    UserId = Guid.Parse(userIdClaim.Value)
+                };
+            }
+            catch
+            {
+                return null;
+            }
+        }
+    }
+
+    public class InviteToken
+    {
+        public Guid UserId { get; set; }
     }
 }
