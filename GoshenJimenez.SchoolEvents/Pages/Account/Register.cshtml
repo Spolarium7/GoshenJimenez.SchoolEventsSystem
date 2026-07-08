@@ -1,0 +1,40 @@
+@page "/account/register"
+@model Register
+
+
+<form method="post" class="mt-5">
+  <div class="mb-3">
+    <div asp-validation-summary="All" class="text-danger"></div>
+  </div>    
+  <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" asp-for="@Model.UserRegisterDto.Username">
+    <span asp-validation-for="@Model.UserRegisterDto.Username" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputPassword1" class="form-label">Password</label>
+    <input type="password" class="form-control" id="exampleInputPassword1" asp-for="@Model.UserRegisterDto.Password">
+    <span asp-validation-for="@Model.UserRegisterDto.Password" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputConfirmPassword1" class="form-label">Confirm Password</label>
+    <input type="password" class="form-control" id="exampleInputConfirmPassword1" asp-for="@Model.UserRegisterDto.ConfirmPassword">
+    <span asp-validation-for="@Model.UserRegisterDto.ConfirmPassword" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputFirstName1" class="form-label">First Name</label>
+    <input type="text" class="form-control" id="exampleInputFirstName1" asp-for="@Model.UserRegisterDto.FirstName">
+    <span asp-validation-for="@Model.UserRegisterDto.FirstName" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputLastName1" class="form-label">Last Name</label>
+    <input type="text" class="form-control" id="exampleInputLastName1" asp-for="@Model.UserRegisterDto.LastName">
+    <span asp-validation-for="@Model.UserRegisterDto.LastName" class="text-danger"></span>
+  </div>
+  <div class="mb-3">
+    <label for="exampleInputDateOfBirth1" class="form-label">Date of Birth</label>
+    <input type="date" class="form-control" id="exampleInputDateOfBirth1" asp-for="@Model.UserRegisterDto.DateOfBirth">
+    <span asp-validation-for="@Model.UserRegisterDto.DateOfBirth" class="text-danger"></span>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
