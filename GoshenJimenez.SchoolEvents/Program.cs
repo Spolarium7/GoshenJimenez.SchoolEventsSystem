@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using GoshenJimenez.SchoolEvents.Infrastructure.Helpers;
 using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,8 @@ builder.Services.AddSession(options =>
         options.Cookie.HttpOnly = true;
         options.Cookie.IsEssential = true; // Essential for session to survive redirects
     });
+
+builder.Services.AddScoped<InviteTokenService>();
 
 var app = builder.Build();
 

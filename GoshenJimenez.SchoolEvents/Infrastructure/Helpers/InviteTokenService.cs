@@ -1,0 +1,43 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+
+namespace GoshenJimenez.SchoolEvents.Infrastructure.Helpers
+{
+    public class InviteTokenService
+    {
+        private readonly IConfiguration _configuration;
+
+        public InviteTokenService(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public string CreateInviteToken(Guid userId)
+        {
+            var secretKey = _configuration["Jwt:InviteSecret"];
+            var issuer = _configuration["Jwt:Issuer"];
+            var audience = _configuration["Jwt:Audience"];
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim("userId", userId.ToString()),
+                new Claim("purpose", "invite")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddDays(3),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+    }
+}
