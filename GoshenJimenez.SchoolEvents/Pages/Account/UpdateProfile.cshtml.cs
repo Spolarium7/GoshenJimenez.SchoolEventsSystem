@@ -11,11 +11,13 @@ using Microsoft.AspNetCore.Authentication;
 public class UpdateProfile : PageModel
 {  
 
-    private readonly SchoolEventsDbContext _dbContext; 
+    private readonly SchoolEventsDbContext _dbContext;
+    private readonly IWebHostEnvironment _environment;
 
-    public UpdateProfile(SchoolEventsDbContext dbContext)
+    public UpdateProfile(SchoolEventsDbContext dbContext, IWebHostEnvironment environment)
     {
-        _dbContext = dbContext;        
+        _dbContext = dbContext;
+        _environment = environment;
     }
 
     [BindProperty]
@@ -40,16 +42,15 @@ public class UpdateProfile : PageModel
         UserUpdateDto.LastName = user.LastName;
         UserUpdateDto.DateOfBirth = user.DateOfBirth;
 
-        var profileImagePath = $"/users/{user.Id}.png";
-        Console.WriteLine(System.IO.File.Exists(profileImagePath));
-        if (System.IO.File.Exists(profileImagePath))
+        var avatarDiskPath = Path.Combine(_environment.WebRootPath, "users", $"{user.Id}.png");
+        if (System.IO.File.Exists(avatarDiskPath))
         {
-            UserUpdateDto.ProfileImage = profileImagePath;
+            UserUpdateDto.ProfileImage = $"/users/{user.Id}.png";
         }
         else
         {
-            UserUpdateDto.ProfileImage = $"/users/default.png";// Path to the default profile image
-        }        
+            UserUpdateDto.ProfileImage = "/users/default.png";// Path to the default profile image
+        }
         return Page();
     }
 
