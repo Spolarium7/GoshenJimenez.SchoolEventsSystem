@@ -40,7 +40,7 @@ builder.Services.AddSession(options =>
         options.Cookie.IsEssential = true; // Essential for session to survive redirects
     });
 
-builder.Services.AddScoped<InviteTokenService>();
+builder.Services.AddScoped<UserTokenService>();
 
 var app = builder.Build();
 
