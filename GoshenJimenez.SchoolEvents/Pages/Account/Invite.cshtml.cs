@@ -18,15 +18,15 @@ public class Invite : PageModel
     private readonly IConfiguration _configuration;
     private readonly IResend _resend;
     private readonly ILogger<Invite> _logger;
-    private readonly InviteTokenService inviteTokenService;
+    private readonly UserTokenService userTokenService;
 
-     public Invite(SchoolEventsDbContext dbContext, IConfiguration configuration, IResend resend, InviteTokenService inviteTokenService, ILogger<Invite> logger)
+     public Invite(SchoolEventsDbContext dbContext, IConfiguration configuration, IResend resend, UserTokenService userTokenService, ILogger<Invite> logger)
     {
         _dbContext = dbContext;
         _configuration = configuration;
         _resend = resend;
         _logger = logger;
-        this.inviteTokenService = inviteTokenService;
+        this.userTokenService = userTokenService;
     }
 
     [BindProperty]
@@ -78,7 +78,7 @@ public class Invite : PageModel
 
         await _dbContext.SaveChangesAsync();
         
-        var token = inviteTokenService.CreateInviteToken(newUser.Id!.Value);
+        var token = userTokenService.CreateInviteToken(newUser.Id!.Value);
 
         var inviteUrl = $"http://localhost:5257/account/accept-invite?token={token}";
 
