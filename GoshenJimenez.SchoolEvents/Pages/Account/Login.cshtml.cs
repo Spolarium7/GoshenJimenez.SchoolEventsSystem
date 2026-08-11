@@ -74,12 +74,24 @@ public class Login : PageModel
                 _dbContext.UserLoginInfos.Add(loginStatus);
             }
 
+            var role = _dbContext.UserLoginInfos.FirstOrDefault( ls => 
+                ls.UserId == user.Id
+                && ls!.Key!.ToLower() == "role"
+            );
+
+            if(role == null)
+            {
+                role = new UserLoginInfo(user.Id, "role", "user");
+                _dbContext.UserLoginInfos.Add(role);
+            }
+
             _dbContext.SaveChanges();
 
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.UserName ?? user.FirstName!),
-                new Claim(ClaimTypes.NameIdentifier, user.Id!.ToString()!)
+                new Claim(ClaimTypes.NameIdentifier, user.Id!.ToString()!),
+                new Claim(ClaimTypes.Role, role!.Value!.ToLower() ?? "")
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
