@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GoshenJimenez.SchoolEvents.Migrations
 {
     [DbContext(typeof(SchoolEventsDbContext))]
-    [Migration("20260630095706_init")]
+    [Migration("20260923095638_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -76,6 +76,9 @@ namespace GoshenJimenez.SchoolEvents.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("longtext");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LastName")
                         .HasColumnType("longtext");
